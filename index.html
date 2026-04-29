@@ -3,88 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bağcılar Belediyesi IT Envanteri</title>
+    <title>Bağcılar Bld. Ağ Envanteri</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #eceff1; margin: 20px; }
-        .container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        h2 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
-        #searchBox { width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 4px; font-size: 16px; box-sizing: border-box; }
-        .table-wrapper { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 1000px; }
-        th { background: #2c3e50; color: white; padding: 12px; text-align: left; position: sticky; top: 0; }
-        td { padding: 10px; border-bottom: 1px solid #eee; font-size: 14px; }
-        tr:hover { background-color: #f9f9f9; }
-        .tag { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
-        .tag-aktif { background: #e8f5e9; color: #2e7d32; }
-        .tag-vdsl { background: #e3f2fd; color: #1565c0; }
-        .tag-fiber { background: #f3e5f5; color: #7b1fa2; }
+        :root { --primary: #1e293b; --accent: #3b82f6; --bg: #f8fafc; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 20px; }
+        .container { max-width: 1100px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+        
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 15px; flex-wrap: wrap; }
+        h2 { margin: 0; font-size: 20px; color: var(--primary); border-left: 5px solid var(--accent); padding-left: 12px; }
+        #searchBox { flex: 1; min-width: 280px; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; outline: none; }
+
+        /* TABLO SADELEŞTİRİLDİ: SADECE 4 BAŞLIK */
+        .table-area { overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 8px; }
+        table { width: 100%; border-collapse: collapse; cursor: pointer; text-align: left; }
+        th { background: #f1f5f9; padding: 15px; font-size: 12px; color: #64748b; text-transform: uppercase; }
+        td { padding: 14px 15px; border-bottom: 1px solid #f1f5f9; font-size: 14px; color: #1e293b; }
+        tr:hover { background: #f8fbff; }
+        code { background: #fef2f2; color: #b91c1c; padding: 3px 6px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+
+        /* KİŞİ KARTI (MODAL) TASARIMI */
+        .modal { display: none; position: fixed; z-index: 999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); }
+        .modal-content { background: white; margin: 12vh auto; width: 90%; max-width: 400px; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.2); animation: scaleUp 0.2s ease; }
+        @keyframes scaleUp { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        
+        .card-top { background: var(--primary); color: white; padding: 25px; position: relative; }
+        .card-top h3 { margin: 0; font-size: 17px; line-height: 1.4; }
+        .close { position: absolute; right: 20px; top: 15px; font-size: 26px; cursor: pointer; color: #94a3b8; }
+
+        .card-body { padding: 20px; }
+        .row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f1f5f9; }
+        .row:last-child { border-bottom: none; }
+        .lbl { font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; }
+        .val { font-size: 14px; font-weight: 500; color: var(--primary); text-align: right; }
+        .status { color: #166534; background: #dcfce7; padding: 3px 10px; border-radius: 10px; font-size: 11px; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>BAĞCILAR BELEDİYESİ - AĞ ENVANTERİ (FAZ 1)</h2>
-    <input type="text" id="searchBox" placeholder="Birim, Mahalle veya Devre No Ara..." onkeyup="filterTable()">
+    <div class="header">
+        <h2>AĞ ENVANTERİ</h2>
+        <input type="text" id="searchBox" placeholder="Birim, mahalle veya devre ara..." onkeyup="filterTable()">
+    </div>
 
-    <div class="table-wrapper">
-        <table id="inventoryTable">
+    <div class="table-area">
+        <table>
             <thead>
                 <tr>
-                    <th>SIRA</th>
                     <th>BİRİM</th>
                     <th>MAHALLE</th>
-                    <th>ISS</th>
-                    <th>TİP</th>
-                    <th>HIZ</th>
-                    <th>DIŞ IP</th>
-                    <th>DURUM</th>
+                    <th>ADRES</th>
+                    <th>DEVRE NO</th>
                 </tr>
             </thead>
-            <tbody id="tableBody">
-                </tbody>
+            <tbody id="tableBody"></tbody>
         </table>
     </div>
 </div>
 
+<div id="itemModal" class="modal">
+    <div class="modal-content">
+        <div class="card-top">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h3 id="m-birim"></h3>
+            <div style="margin-top:10px; font-size:12px; color:#3b82f6;">TÜRKNET ALTYAPISI</div>
+        </div>
+        <div class="card-body">
+            <div class="row"><span class="lbl">Tam Adres</span><span class="val" id="m-adres"></span></div>
+            <div class="row"><span class="lbl">Dış IP</span><span class="val" id="m-ip" style="color:#2563eb; font-weight:bold;"></span></div>
+            <div class="row"><span class="lbl">Hız / Tip</span><span class="val" id="m-tip"></span></div>
+            <div class="row"><span class="lbl">Durum</span><span class="val"><span class="status">AKTİF</span></span></div>
+        </div>
+    </div>
+</div>
+
 <script>
-    // --- BURASI SENİN KOLAYCA GÜNCELLEYECEĞİN VERİ ALANI ---
-    const envanterVerisi = [
-        { sira: 1, birim: "100.YIL MAHALLESİ HAVUZ", mahalle: "100.YIL", iss: "TÜRKNET", tip: "VDSL", hiz: "100/4", ip: "BEKLENİYOR", durum: "AKTİF" },
-        { sira: 2, birim: "KAZIM KARABEKİR BİLGİ EVİ", mahalle: "K.KARABEKİR", iss: "TÜRKNET", tip: "VDSL", hiz: "50", ip: "BEKLENİYOR", durum: "AKTİF" },
-        { sira: 3, birim: "GÜNEŞLİ BAĞ KAFE", mahalle: "GÜNEŞLİ", iss: "TÜRKNET", tip: "FTTX", hiz: "1000", ip: "BEKLENİYOR", durum: "AKTİF" },
-        { sira: 4, birim: "ŞEHİR KÜTÜPHANESİ", mahalle: "SANCAKTEPE", iss: "TÜRKNET", tip: "METRO ETH", hiz: "1000", ip: "BEKLENİYOR", durum: "AKTİF" },
-        { sira: 5, birim: "YENİGÜN BİLGİ EVİ", mahalle: "YENİGÜN", iss: "TÜRKNET", tip: "FTTX", hiz: "1000", ip: "BEKLENİYOR", durum: "AKTİF" },
-        { sira: 10, birim: "BAŞKANLIK HİZMET BİNASI", mahalle: "GÜNEŞLİ", iss: "TÜRKNET", tip: "METRO ETH", hiz: "2000", ip: "BEKLENİYOR", durum: "AKTİF" }
-        // Liste böyle devam ediyor... Yarın IP'ler gelince burayı tamamen dolduracağız.
+    // IP'ler gelene kadar örnek liste (Yarın burayı güncelleyeceğiz)
+    const envanter = [
+        { birim: "100.YIL MAHALLESİ HAVUZ", mahalle: "100.YIL", adres: "2162. Sokak No:3", devre: "yuzyilhavuzvdsl", tip: "100/4 Mbps - VDSL", ip: "BEKLENİYOR" },
+        { birim: "KAZIM KARABEKİR BİLGİ EVİ", mahalle: "K.KARABEKİR", adres: "259. Sokak No:2", devre: "kk_bilgievi", tip: "50 Mbps - VDSL", ip: "BEKLENİYOR" },
+        { birim: "GÜNEŞLİ BAĞ KAFE", mahalle: "GÜNEŞLİ", adres: "Fevzi Çakmak No:12", devre: "bagkafe_fiber", tip: "1000 Mbps - FTTX", ip: "BEKLENİYOR" }
     ];
 
-    function renderTable(data) {
-        const body = document.getElementById('tableBody');
-        body.innerHTML = data.map(item => `
-            <tr>
-                <td>${item.sira}</td>
+    function render(data) {
+        document.getElementById('tableBody').innerHTML = data.map(item => `
+            <tr onclick="openModal('${item.birim}')">
                 <td><b>${item.birim}</b></td>
                 <td>${item.mahalle}</td>
-                <td>${item.iss}</td>
-                <td><span class="tag ${item.tip.includes('VDSL') ? 'tag-vdsl' : 'tag-fiber'}">${item.tip}</span></td>
-                <td>${item.hiz} Mbps</td>
-                <td><code>${item.ip}</code></td>
-                <td><span class="tag tag-aktif">${item.durum}</span></td>
+                <td><small>${item.adres}</small></td>
+                <td><code>${item.devre}</code></td>
             </tr>
         `).join('');
     }
 
-    function filterTable() {
-        const query = document.getElementById('searchBox').value.toLowerCase();
-        const filtered = envanterVerisi.filter(item => 
-            item.birim.toLowerCase().includes(query) || 
-            item.mahalle.toLowerCase().includes(query) ||
-            item.ip.toLowerCase().includes(query)
-        );
-        renderTable(filtered);
+    function openModal(name) {
+        const item = envanter.find(l => l.birim === name);
+        document.getElementById('m-birim').innerText = item.birim;
+        document.getElementById('m-adres').innerText = item.adres;
+        document.getElementById('m-ip').innerText = item.ip;
+        document.getElementById('m-tip').innerText = item.tip;
+        document.getElementById('itemModal').style.display = "block";
     }
 
-    window.onload = () => renderTable(envanterVerisi);
+    function closeModal() { document.getElementById('itemModal').style.display = "none"; }
+    
+    function filterTable() {
+        const s = document.getElementById('searchBox').value.toLowerCase();
+        render(envanter.filter(l => l.birim.toLowerCase().includes(s) || l.mahalle.toLowerCase().includes(s) || l.devre.toLowerCase().includes(s)));
+    }
+
+    window.onclick = (e) => { if(e.target == document.getElementById('itemModal')) closeModal(); }
+    window.onload = () => render(envanter);
 </script>
 
 </body>
