@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bağcılar Belediyesi IT Envanteri</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #eceff1; margin: 20px; }
+        .container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h2 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+        #searchBox { width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 4px; font-size: 16px; box-sizing: border-box; }
+        .table-wrapper { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 1000px; }
+        th { background: #2c3e50; color: white; padding: 12px; text-align: left; position: sticky; top: 0; }
+        td { padding: 10px; border-bottom: 1px solid #eee; font-size: 14px; }
+        tr:hover { background-color: #f9f9f9; }
+        .tag { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+        .tag-aktif { background: #e8f5e9; color: #2e7d32; }
+        .tag-vdsl { background: #e3f2fd; color: #1565c0; }
+        .tag-fiber { background: #f3e5f5; color: #7b1fa2; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>BAĞCILAR BELEDİYESİ - AĞ ENVANTERİ (FAZ 1)</h2>
+    <input type="text" id="searchBox" placeholder="Birim, Mahalle veya Devre No Ara..." onkeyup="filterTable()">
+
+    <div class="table-wrapper">
+        <table id="inventoryTable">
+            <thead>
+                <tr>
+                    <th>SIRA</th>
+                    <th>BİRİM</th>
+                    <th>MAHALLE</th>
+                    <th>ISS</th>
+                    <th>TİP</th>
+                    <th>HIZ</th>
+                    <th>DIŞ IP</th>
+                    <th>DURUM</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    // --- BURASI SENİN KOLAYCA GÜNCELLEYECEĞİN VERİ ALANI ---
+    const envanterVerisi = [
+        { sira: 1, birim: "100.YIL MAHALLESİ HAVUZ", mahalle: "100.YIL", iss: "TÜRKNET", tip: "VDSL", hiz: "100/4", ip: "BEKLENİYOR", durum: "AKTİF" },
+        { sira: 2, birim: "KAZIM KARABEKİR BİLGİ EVİ", mahalle: "K.KARABEKİR", iss: "TÜRKNET", tip: "VDSL", hiz: "50", ip: "BEKLENİYOR", durum: "AKTİF" },
+        { sira: 3, birim: "GÜNEŞLİ BAĞ KAFE", mahalle: "GÜNEŞLİ", iss: "TÜRKNET", tip: "FTTX", hiz: "1000", ip: "BEKLENİYOR", durum: "AKTİF" },
+        { sira: 4, birim: "ŞEHİR KÜTÜPHANESİ", mahalle: "SANCAKTEPE", iss: "TÜRKNET", tip: "METRO ETH", hiz: "1000", ip: "BEKLENİYOR", durum: "AKTİF" },
+        { sira: 5, birim: "YENİGÜN BİLGİ EVİ", mahalle: "YENİGÜN", iss: "TÜRKNET", tip: "FTTX", hiz: "1000", ip: "BEKLENİYOR", durum: "AKTİF" },
+        { sira: 10, birim: "BAŞKANLIK HİZMET BİNASI", mahalle: "GÜNEŞLİ", iss: "TÜRKNET", tip: "METRO ETH", hiz: "2000", ip: "BEKLENİYOR", durum: "AKTİF" }
+        // Liste böyle devam ediyor... Yarın IP'ler gelince burayı tamamen dolduracağız.
+    ];
+
+    function renderTable(data) {
+        const body = document.getElementById('tableBody');
+        body.innerHTML = data.map(item => `
+            <tr>
+                <td>${item.sira}</td>
+                <td><b>${item.birim}</b></td>
+                <td>${item.mahalle}</td>
+                <td>${item.iss}</td>
+                <td><span class="tag ${item.tip.includes('VDSL') ? 'tag-vdsl' : 'tag-fiber'}">${item.tip}</span></td>
+                <td>${item.hiz} Mbps</td>
+                <td><code>${item.ip}</code></td>
+                <td><span class="tag tag-aktif">${item.durum}</span></td>
+            </tr>
+        `).join('');
+    }
+
+    function filterTable() {
+        const query = document.getElementById('searchBox').value.toLowerCase();
+        const filtered = envanterVerisi.filter(item => 
+            item.birim.toLowerCase().includes(query) || 
+            item.mahalle.toLowerCase().includes(query) ||
+            item.ip.toLowerCase().includes(query)
+        );
+        renderTable(filtered);
+    }
+
+    window.onload = () => renderTable(envanterVerisi);
+</script>
+
+</body>
+</html>
