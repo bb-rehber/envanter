@@ -3,38 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bağcılar Bld. Ağ Envanteri</title>
+    <title>Bağcılar Belediyesi Kurumsal Rehber</title>
     <style>
         :root { --primary: #1e293b; --accent: #3b82f6; --bg: #f8fafc; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 20px; }
         .container { max-width: 1100px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
         
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 15px; flex-wrap: wrap; }
-        h2 { margin: 0; font-size: 20px; color: var(--primary); border-left: 5px solid var(--accent); padding-left: 12px; }
-        #searchBox { flex: 1; min-width: 280px; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; outline: none; }
+        /* Üst Başlık ve Arama Alanı */
+        .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 25px; gap: 15px; flex-wrap: wrap; }
+        .title-area h2 { margin: 0; font-size: 18px; color: var(--primary); }
+        .title-area p { margin: 5px 0 0; font-size: 13px; color: var(--accent); font-weight: 600; border-left: 3px solid var(--accent); padding-left: 8px; }
+        
+        #searchBox { width: 250px; padding: 10px; border: 2px solid #e2e8f0; border-radius: 8px; outline: none; transition: 0.3s; }
+        #searchBox:focus { border-color: var(--accent); width: 300px; }
 
-        /* TABLO SADELEŞTİRİLDİ: SADECE 4 BAŞLIK */
+        /* Tablo Alanı */
         .table-area { overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 8px; }
         table { width: 100%; border-collapse: collapse; cursor: pointer; text-align: left; }
-        th { background: #f1f5f9; padding: 15px; font-size: 12px; color: #64748b; text-transform: uppercase; }
-        td { padding: 14px 15px; border-bottom: 1px solid #f1f5f9; font-size: 14px; color: #1e293b; }
+        th { background: #f1f5f9; padding: 15px; font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
+        td { padding: 14px 15px; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: #1e293b; }
         tr:hover { background: #f8fbff; }
-        code { background: #fef2f2; color: #b91c1c; padding: 3px 6px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+        code { background: #fef2f2; color: #b91c1c; padding: 3px 6px; border-radius: 4px; font-size: 11px; font-weight: bold; }
 
-        /* KİŞİ KARTI (MODAL) TASARIMI */
+        /* Sayfalama Butonları */
+        .pagination { display: flex; justify-content: center; gap: 8px; margin-top: 20px; }
+        .pagination button { padding: 8px 12px; border: 1px solid #e2e8f0; background: white; border-radius: 6px; cursor: pointer; transition: 0.2s; font-size: 13px; }
+        .pagination button.active { background: var(--accent); color: white; border-color: var(--accent); }
+        .pagination button:hover:not(.active) { background: #f1f5f9; }
+
+        /* KİŞİ KARTI (MODAL) */
         .modal { display: none; position: fixed; z-index: 999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); }
-        .modal-content { background: white; margin: 12vh auto; width: 90%; max-width: 400px; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.2); animation: scaleUp 0.2s ease; }
-        @keyframes scaleUp { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .modal-content { background: white; margin: 10vh auto; width: 90%; max-width: 420px; border-radius: 16px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); animation: scaleUp 0.2s ease; }
+        @keyframes scaleUp { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         
         .card-top { background: var(--primary); color: white; padding: 25px; position: relative; }
-        .card-top h3 { margin: 0; font-size: 17px; line-height: 1.4; }
-        .close { position: absolute; right: 20px; top: 15px; font-size: 26px; cursor: pointer; color: #94a3b8; }
+        .card-top h3 { margin: 0; font-size: 16px; line-height: 1.4; text-transform: uppercase; }
+        .close { position: absolute; right: 20px; top: 15px; font-size: 24px; cursor: pointer; color: #94a3b8; }
 
         .card-body { padding: 20px; }
         .row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f1f5f9; }
         .row:last-child { border-bottom: none; }
         .lbl { font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; }
-        .val { font-size: 14px; font-weight: 500; color: var(--primary); text-align: right; }
+        .val { font-size: 13px; font-weight: 500; color: var(--primary); text-align: right; }
         .status { color: #166534; background: #dcfce7; padding: 3px 10px; border-radius: 10px; font-size: 11px; font-weight: bold; }
     </style>
 </head>
@@ -42,8 +52,11 @@
 
 <div class="container">
     <div class="header">
-        <h2>AĞ ENVANTERİ</h2>
-        <input type="text" id="searchBox" placeholder="Birim, mahalle veya devre ara..." onkeyup="filterTable()">
+        <div class="title-area">
+            <h2>BAĞCILAR BELEDİYESİ KURUMSAL REHBER</h2>
+            <p>Bilgi İşlem Müdürlüğü</p>
+        </div>
+        <input type="text" id="searchBox" placeholder="Hızlı ara..." onkeyup="handleSearch()">
     </div>
 
     <div class="table-area">
@@ -59,17 +72,21 @@
             <tbody id="tableBody"></tbody>
         </table>
     </div>
+
+    <div class="pagination" id="pagination"></div>
 </div>
 
+<!-- KİŞİ KARTI -->
 <div id="itemModal" class="modal">
     <div class="modal-content">
         <div class="card-top">
             <span class="close" onclick="closeModal()">&times;</span>
             <h3 id="m-birim"></h3>
-            <div style="margin-top:10px; font-size:12px; color:#3b82f6;">TÜRKNET ALTYAPISI</div>
         </div>
         <div class="card-body">
+            <div class="row"><span class="lbl">Mahalle</span><span class="val" id="m-mahalle"></span></div>
             <div class="row"><span class="lbl">Tam Adres</span><span class="val" id="m-adres"></span></div>
+            <div class="row"><span class="lbl">Devre No</span><span class="val"><code id="m-devre"></code></span></div>
             <div class="row"><span class="lbl">Dış IP</span><span class="val" id="m-ip" style="color:#2563eb; font-weight:bold;"></span></div>
             <div class="row"><span class="lbl">Hız / Tip</span><span class="val" id="m-tip"></span></div>
             <div class="row"><span class="lbl">Durum</span><span class="val"><span class="status">AKTİF</span></span></div>
@@ -78,15 +95,27 @@
 </div>
 
 <script>
-    // IP'ler gelene kadar örnek liste (Yarın burayı güncelleyeceğiz)
-    const envanter = [
+    // Örnek Veri (Yarın buraya 52 satır gelecek)
+    const veri = [
         { birim: "100.YIL MAHALLESİ HAVUZ", mahalle: "100.YIL", adres: "2162. Sokak No:3", devre: "yuzyilhavuzvdsl", tip: "100/4 Mbps - VDSL", ip: "BEKLENİYOR" },
         { birim: "KAZIM KARABEKİR BİLGİ EVİ", mahalle: "K.KARABEKİR", adres: "259. Sokak No:2", devre: "kk_bilgievi", tip: "50 Mbps - VDSL", ip: "BEKLENİYOR" },
-        { birim: "GÜNEŞLİ BAĞ KAFE", mahalle: "GÜNEŞLİ", adres: "Fevzi Çakmak No:12", devre: "bagkafe_fiber", tip: "1000 Mbps - FTTX", ip: "BEKLENİYOR" }
+        { birim: "GÜNEŞLİ BAĞ KAFE", mahalle: "GÜNEŞLİ", adres: "Fevzi Çakmak No:12", devre: "bagkafe_fiber", tip: "1000 Mbps - FTTX", ip: "BEKLENİYOR" },
+        { birim: "ŞEHİR KÜTÜPHANESİ", mahalle: "SANCAKTEPE", adres: "Şehir Cad. No:5", devre: "kutuphane_metro", tip: "METRO ETH", ip: "BEKLENİYOR" },
+        { birim: "YENİGÜN BİLGİ EVİ", mahalle: "YENİGÜN", adres: "Bağcılar Cad. No:88", devre: "yenigun_fiber", tip: "FTTX", ip: "BEKLENİYOR" },
+        { birim: "MAHMUTBEY BİLGİ EVİ", mahalle: "MAHMUTBEY", adres: "Köy içi No:4", devre: "mahmutbey_vdsl", tip: "VDSL", ip: "BEKLENİYOR" },
+        { birim: "HÜRRİYET BİLGİ EVİ", mahalle: "HÜRRİYET", adres: "Menderes Cd. No:22", devre: "hurriyet_fiber", tip: "FTTX", ip: "BEKLENİYOR" }
     ];
 
-    function render(data) {
-        document.getElementById('tableBody').innerHTML = data.map(item => `
+    let currentPage = 1;
+    let rowsPerPage = 5; // Sayfa başına gösterilecek kayıt sayısı
+    let filteredData = [...veri];
+
+    function renderTable() {
+        const start = (currentPage - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
+        const paginatedItems = filteredData.slice(start, end);
+
+        document.getElementById('tableBody').innerHTML = paginatedItems.map(item => `
             <tr onclick="openModal('${item.birim}')">
                 <td><b>${item.birim}</b></td>
                 <td>${item.mahalle}</td>
@@ -94,26 +123,45 @@
                 <td><code>${item.devre}</code></td>
             </tr>
         `).join('');
+        
+        renderPagination();
+    }
+
+    function renderPagination() {
+        const pageCount = Math.ceil(filteredData.length / rowsPerPage);
+        const paginArea = document.getElementById('pagination');
+        paginArea.innerHTML = "";
+        
+        for (let i = 1; i <= pageCount; i++) {
+            const btn = document.createElement('button');
+            btn.innerText = i;
+            if (i === currentPage) btn.className = 'active';
+            btn.onclick = () => { currentPage = i; renderTable(); };
+            paginArea.appendChild(btn);
+        }
+    }
+
+    function handleSearch() {
+        const s = document.getElementById('searchBox').value.toLowerCase();
+        filteredData = veri.filter(l => l.birim.toLowerCase().includes(s) || l.mahalle.toLowerCase().includes(s) || l.devre.toLowerCase().includes(s));
+        currentPage = 1;
+        renderTable();
     }
 
     function openModal(name) {
-        const item = envanter.find(l => l.birim === name);
+        const item = veri.find(l => l.birim === name);
         document.getElementById('m-birim').innerText = item.birim;
+        document.getElementById('m-mahalle').innerText = item.mahalle;
         document.getElementById('m-adres').innerText = item.adres;
+        document.getElementById('m-devre').innerText = item.devre;
         document.getElementById('m-ip').innerText = item.ip;
         document.getElementById('m-tip').innerText = item.tip;
         document.getElementById('itemModal').style.display = "block";
     }
 
     function closeModal() { document.getElementById('itemModal').style.display = "none"; }
-    
-    function filterTable() {
-        const s = document.getElementById('searchBox').value.toLowerCase();
-        render(envanter.filter(l => l.birim.toLowerCase().includes(s) || l.mahalle.toLowerCase().includes(s) || l.devre.toLowerCase().includes(s)));
-    }
-
     window.onclick = (e) => { if(e.target == document.getElementById('itemModal')) closeModal(); }
-    window.onload = () => render(envanter);
+    window.onload = renderTable;
 </script>
 
 </body>
