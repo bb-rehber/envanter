@@ -13,7 +13,6 @@
         .title-area h2 { margin: 0; font-size: 19px; color: var(--primary); letter-spacing: -0.5px; }
         .title-area p { margin: 4px 0 0; font-size: 12px; color: #64748b; font-weight: 600; text-transform: uppercase; }
         
-        /* Arama Kutusu Sağa Yaslı ve Kısa */
         #searchBox { width: 220px; padding: 10px 15px; border: 2px solid #e2e8f0; border-radius: 8px; outline: none; transition: 0.3s; font-size: 13px; }
         #searchBox:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
 
@@ -28,7 +27,6 @@
         .pagination button { border: 1px solid #e2e8f0; background: white; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; color: var(--primary); }
         .pagination button.active { background: var(--accent); color: white; border-color: var(--accent); font-weight: bold; }
 
-        /* MODAL KART */
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(3px); }
         .modal-content { background: white; margin: 10vh auto; width: 90%; max-width: 400px; border-radius: 12px; overflow: hidden; animation: slideIn 0.25s ease-out; }
         @keyframes slideIn { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
@@ -36,13 +34,13 @@
         .card-top { background: var(--primary); color: white; padding: 20px; position: relative; }
         .card-top h3 { margin: 0; font-size: 15px; text-transform: uppercase; padding-right: 25px; }
         .close { position: absolute; right: 15px; top: 15px; cursor: pointer; font-size: 20px; opacity: 0.7; }
-        .close:hover { opacity: 1; }
 
         .card-body { padding: 15px; }
         .info-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f1f5f9; }
-        .info-row:last-child { border-bottom: none; }
+        .info-row.notes-area { flex-direction: column; align-items: flex-start; background: #fffbeb; padding: 10px; border-radius: 8px; border: 1px solid #fef3c7; margin-top: 10px; }
         .info-lbl { font-size: 11px; font-weight: bold; color: #94a3b8; text-transform: uppercase; }
         .info-val { font-size: 13px; color: var(--primary); font-weight: 500; text-align: right; }
+        .note-text { font-size: 12px; color: #92400e; margin-top: 5px; font-style: italic; text-align: left; line-height: 1.4; }
     </style>
 </head>
 <body>
@@ -82,20 +80,23 @@
             <div class="info-row"><span class="info-lbl">Mahalle</span><span class="info-val" id="m-mahalle"></span></div>
             <div class="info-row"><span class="info-lbl">Açık Adres</span><span class="info-val" id="m-adres"></span></div>
             <div class="info-row"><span class="info-lbl">Devre Numarası</span><span class="info-val"><code id="m-devre"></code></span></div>
-            <div class="info-row"><span class="info-lbl">Dış IP Adresi</span><span class="info-val" id="m-ip" style="color:#2563eb;"></span></div>
             <div class="info-row"><span class="info-lbl">Bağlantı Tipi</span><span class="info-val" id="m-tip"></span></div>
+            <!-- NOT ALANI -->
+            <div class="info-row notes-area">
+                <span class="info-lbl">İŞLEM NOTLARI</span>
+                <span class="note-text" id="m-not"></span>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
-    // Test verileri
     const liste = [
-        { birim: "100.YIL MAHALLESİ HAVUZ", mahalle: "100.YIL", adres: "2162. Sokak No:3", devre: "yuzyilhavuzvdsl", tip: "100/4 Mbps - VDSL", ip: "BEKLENİYOR" },
-        { birim: "KAZIM KARABEKİR BİLGİ EVİ", mahalle: "K.KARABEKİR", adres: "259. Sokak No:2", devre: "kk_bilgievi", tip: "50 Mbps - VDSL", ip: "BEKLENİYOR" },
-        { birim: "GÜNEŞLİ BAĞ KAFE", mahalle: "GÜNEŞLİ", adres: "Fevzi Çakmak No:12", devre: "bagkafe_fiber", tip: "1000 Mbps - FTTX", ip: "BEKLENİYOR" },
-        { birim: "ŞEHİR KÜTÜPHANESİ", mahalle: "SANCAKTEPE", adres: "Şehir Cad. No:5", devre: "kutuphane_metro", tip: "METRO ETH", ip: "BEKLENİYOR" },
-        { birim: "YENİGÜN BİLGİ EVİ", mahalle: "YENİGÜN", adres: "Bağcılar Cad. No:88", devre: "yenigun_fiber", tip: "FTTX", ip: "BEKLENİYOR" }
+        { birim: "100.YIL MAHALLESİ HAVUZ", mahalle: "100.YIL", adres: "2162. Sokak No:3", devre: "yuzyilhavuzvdsl", tip: "100/4 Mbps - VDSL", not: "Devre kapatıldı, taşınma süreci bekleniyor." },
+        { birim: "KAZIM KARABEKİR BİLGİ EVİ", mahalle: "K.KARABEKİR", adres: "259. Sokak No:2", devre: "kk_bilgievi", tip: "50 Mbps - VDSL", not: "Paket değişikliği yapıldı (50 Mbps)." },
+        { birim: "GÜNEŞLİ BAĞ KAFE", mahalle: "GÜNEŞLİ", adres: "Fevzi Çakmak No:12", devre: "bagkafe_fiber", tip: "1000 Mbps - FTTX", not: "Yeni tesis. Fiber sonlandırma tamamlandı." },
+        { birim: "ŞEHİR KÜTÜPHANESİ", mahalle: "SANCAKTEPE", adres: "Şehir Cad. No:5", devre: "kutuphane_metro", tip: "METRO ETH", not: "Sistem odası mutfaktan yeni odaya taşındı." },
+        { birim: "YENİGÜN BİLGİ EVİ", mahalle: "YENİGÜN", adres: "Bağcılar Cad. No:88", devre: "yenigun_fiber", tip: "FTTX", not: "Türknet ekip onayı bekleniyor." }
     ];
 
     let current = 1;
@@ -105,7 +106,6 @@
     function draw() {
         const start = (current - 1) * perPage;
         const items = filtered.slice(start, start + perPage);
-        
         document.getElementById('tBody').innerHTML = items.map(i => `
             <tr onclick="openCard('${i.birim}')">
                 <td><b>${i.birim}</b></td>
@@ -136,8 +136,8 @@
         document.getElementById('m-mahalle').innerText = i.mahalle;
         document.getElementById('m-adres').innerText = i.adres;
         document.getElementById('m-devre').innerText = i.devre;
-        document.getElementById('m-ip').innerText = i.ip;
         document.getElementById('m-tip').innerText = i.tip;
+        document.getElementById('m-not').innerText = i.not || "Not bulunmuyor.";
         document.getElementById('myModal').style.display = "block";
     }
 
