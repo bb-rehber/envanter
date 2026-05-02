@@ -3,88 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Altyapı Envanter Listesi</title>
+    <title>Bilgi İşlem Altyapı Dashboard</title>
     <style>
-        :root { --primary: #1e293b; --accent: #3b82f6; --bg: #f8fafc; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 20px; }
-        .container { max-width: 1100px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+        :root { 
+            --primary: #1e293b; 
+            --accent: #3b82f6; 
+            --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --glass: rgba(255, 255, 255, 0.9);
+        }
+
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            background: var(--bg-gradient); 
+            margin: 0; 
+            padding: 20px; 
+            min-height: 100vh;
+            color: #1e293b;
+        }
+
+        .container { 
+            max-width: 1200px; 
+            margin: auto; 
+        }
+
+        /* ÜST RAPOR KARTLARI */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: var(--glass);
+            padding: 20px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            text-align: center;
+        }
+
+        .stat-card h4 { margin: 0; font-size: 12px; color: #64748b; text-transform: uppercase; }
+        .stat-card p { margin: 10px 0 0; font-size: 24px; font-weight: bold; color: var(--primary); }
+
+        /* ANA PANEL (GLASSMORPHISM) */
+        .main-panel {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .header { 
+            display: flex; justify-content: space-between; align-items: center; 
+            margin-bottom: 25px; border-bottom: 2px solid rgba(0,0,0,0.05); padding-bottom: 15px;
+        }
+
+        #searchBox { 
+            width: 250px; padding: 12px 18px; border: 1px solid #cbd5e1; 
+            border-radius: 10px; outline: none; background: white;
+        }
+
+        /* TABLO TASARIMI */
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 15px; font-size: 11px; color: #64748b; text-transform: uppercase; }
+        td { padding: 15px; border-bottom: 1px solid rgba(0,0,0,0.05); font-size: 14px; }
+        tr:hover { background: rgba(59, 130, 246, 0.05); cursor: pointer; }
+
+        /* BADGE & IKONLAR */
+        .badge {
+            padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: bold;
+        }
+        .bg-vdsl { background: #e0f2fe; color: #0369a1; }
+        .bg-fiber { background: #f0fdf4; color: #15803d; }
+        .bg-metro { background: #faf5ff; color: #7e22ce; }
         
-        .header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 25px; gap: 15px; flex-wrap: wrap; }
-        .title-area h2 { margin: 0; font-size: 19px; color: var(--primary); letter-spacing: -0.5px; }
-        .title-area p { margin: 4px 0 0; font-size: 12px; color: #64748b; font-weight: 600; text-transform: uppercase; }
+        .status-dot { height: 10px; width: 10px; border-radius: 50%; display: inline-block; margin-right: 5px; }
+
+        /* DEV KİŞİ KARTI */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); }
+        .modal-content { 
+            background: white; margin: 5vh auto; width: 90%; max-width: 650px; 
+            border-radius: 25px; overflow: hidden; animation: zoomIn 0.3s ease;
+        }
+        @keyframes zoomIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        .card-top { background: var(--primary); color: white; padding: 35px; position: relative; }
+        .card-body { padding: 35px; }
+        .info-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
+        .notes-area { background: #fffbeb; padding: 20px; border-radius: 15px; border: 1px solid #fef3c7; margin-top: 20px; }
         
-        #searchBox { width: 220px; padding: 10px 15px; border: 2px solid #e2e8f0; border-radius: 8px; outline: none; transition: 0.3s; font-size: 13px; }
-        #searchBox:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
-
-        .table-area { overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 8px; }
-        table { width: 100%; border-collapse: collapse; cursor: pointer; }
-        th { background: #f8fafc; padding: 15px; font-size: 11px; color: #64748b; text-align: left; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; }
-        td { padding: 14px 15px; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: #1e293b; }
-        tr:hover { background: #f8fbff; }
-        code { background: #f1f5f9; color: #b91c1c; padding: 3px 6px; border-radius: 4px; font-size: 11px; font-weight: bold; border: 1px solid #e2e8f0; }
-
-        .pagination { display: flex; justify-content: center; gap: 5px; margin-top: 20px; }
-        .pagination button { border: 1px solid #e2e8f0; background: white; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; color: var(--primary); }
-        .pagination button.active { background: var(--accent); color: white; border-color: var(--accent); font-weight: bold; }
-
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(3px); }
-        .modal-content { background: white; margin: 10vh auto; width: 90%; max-width: 400px; border-radius: 12px; overflow: hidden; animation: slideIn 0.25s ease-out; }
-        @keyframes slideIn { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        
-        .card-top { background: var(--primary); color: white; padding: 20px; position: relative; }
-        .card-top h3 { margin: 0; font-size: 15px; text-transform: uppercase; padding-right: 25px; }
-        .close { position: absolute; right: 15px; top: 15px; cursor: pointer; font-size: 20px; opacity: 0.7; }
-
-        .card-body { padding: 15px; }
-        .info-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f1f5f9; }
-        .info-row.notes-area { flex-direction: column; align-items: flex-start; background: #fffbeb; padding: 10px; border-radius: 8px; border: 1px solid #fef3c7; margin-top: 10px; }
-        .info-lbl { font-size: 11px; font-weight: bold; color: #94a3b8; text-transform: uppercase; }
-        .info-val { font-size: 13px; color: var(--primary); font-weight: 500; text-align: right; }
-        .note-text { font-size: 12px; color: #92400e; margin-top: 5px; font-style: italic; text-align: left; line-height: 1.4; }
+        .pagination button { border: none; background: rgba(0,0,0,0.05); padding: 8px 15px; margin: 0 3px; border-radius: 8px; cursor: pointer; }
+        .pagination button.active { background: var(--accent); color: white; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="header">
-        <div class="title-area">
-            <h2>ALTYAPI ENVANTER LİSTESİ</h2>
-            <p>Bilgi İşlem Müdürlüğü</p>
-        </div>
-        <input type="text" id="searchBox" placeholder="Birim veya devre ara..." onkeyup="search()">
+    <!-- ÜST RAPOR PANELİ -->
+    <div class="stats-grid">
+        <div class="stat-card"><h4>Türknet</h4><p id="stat-tnet">0</p></div>
+        <div class="stat-card"><h4>Türk Telekom</h4><p id="stat-tt">0</p></div>
+        <div class="stat-card"><h4>Superbox</h4><p id="stat-sbox">0</p></div>
+        <div class="stat-card"><h4>Fiber / Metro</h4><p id="stat-fiber">0</p></div>
     </div>
 
-    <div class="table-area">
-        <table>
-            <thead>
-                <tr>
-                    <th>BİRİM ADI</th>
-                    <th>MAHALLE</th>
-                    <th>ADRES</th>
-                    <th>DEVRE NO</th>
-                </tr>
-            </thead>
-            <tbody id="tBody"></tbody>
-        </table>
+    <div class="main-panel">
+        <div class="header">
+            <div>
+                <h2 style="margin:0">ALTYAPI ENVANTERİ</h2>
+                <small style="color:#64748b">Bağcılar Belediyesi | Bilgi İşlem</small>
+            </div>
+            <input type="text" id="searchBox" placeholder="Birim, Mahalle veya Operatör ara..." onkeyup="search()">
+        </div>
+
+        <div style="overflow-x:auto">
+            <table>
+                <thead>
+                    <tr>
+                        <th>BİRİM ADI</th>
+                        <th>OPERATÖR</th>
+                        <th>TİP</th>
+                        <th>DURUM</th>
+                    </tr>
+                </thead>
+                <tbody id="tBody"></tbody>
+            </table>
+        </div>
+        <div class="pagination" id="pagin" style="margin-top:20px; text-align:center;"></div>
     </div>
-    <div class="pagination" id="pagin"></div>
 </div>
 
 <div id="myModal" class="modal">
     <div class="modal-content">
         <div class="card-top">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <h3 id="m-birim"></h3>
+            <span style="position:absolute; right:20px; top:20px; cursor:pointer; font-size:24px" onclick="closeModal()">&times;</span>
+            <h2 id="m-birim" style="margin:0"></h2>
+            <p id="m-operatör" style="opacity:0.8; margin:5px 0 0; font-size:14px"></p>
         </div>
         <div class="card-body">
-            <div class="info-row"><span class="info-lbl">Mahalle</span><span class="info-val" id="m-mahalle"></span></div>
-            <div class="info-row"><span class="info-lbl">Açık Adres</span><span class="info-val" id="m-adres"></span></div>
-            <div class="info-row"><span class="info-lbl">Devre Numarası</span><span class="info-val"><code id="m-devre"></code></span></div>
-            <div class="info-row"><span class="info-lbl">Bağlantı Tipi</span><span class="info-val" id="m-tip"></span></div>
-            <!-- NOT ALANI -->
-            <div class="info-row notes-area">
-                <span class="info-lbl">İŞLEM NOTLARI</span>
-                <span class="note-text" id="m-not"></span>
+            <div class="info-row"><span>Mahalle</span><b id="m-mahalle"></b></div>
+            <div class="info-row"><span>Adres</span><b id="m-adres"></b></div>
+            <div class="info-row"><span>Devre No</span><code id="m-devre" style="color:red; font-weight:bold"></code></div>
+            <div class="info-row"><span>Bağlantı</span><span id="m-tip" class="badge"></span></div>
+            <div class="notes-area">
+                <div style="font-size:11px; font-weight:bold; color:#92400e; margin-bottom:10px">İŞLEM VE TAŞINMA NOTLARI</div>
+                <div id="m-not" style="font-size:14px; line-height:1.6; font-style:italic"></div>
             </div>
         </div>
     </div>
@@ -92,16 +159,23 @@
 
 <script>
     const liste = [
-        { birim: "100.YIL MAHALLESİ HAVUZ", mahalle: "100.YIL", adres: "2162. Sokak No:3", devre: "yuzyilhavuzvdsl", tip: "100/4 Mbps - VDSL", not: "Devre kapatıldı, taşınma süreci bekleniyor." },
-        { birim: "KAZIM KARABEKİR BİLGİ EVİ", mahalle: "K.KARABEKİR", adres: "259. Sokak No:2", devre: "kk_bilgievi", tip: "50 Mbps - VDSL", not: "Paket değişikliği yapıldı (50 Mbps)." },
-        { birim: "GÜNEŞLİ BAĞ KAFE", mahalle: "GÜNEŞLİ", adres: "Fevzi Çakmak No:12", devre: "bagkafe_fiber", tip: "1000 Mbps - FTTX", not: "Yeni tesis. Fiber sonlandırma tamamlandı." },
-        { birim: "ŞEHİR KÜTÜPHANESİ", mahalle: "SANCAKTEPE", adres: "Şehir Cad. No:5", devre: "kutuphane_metro", tip: "METRO ETH", not: "Sistem odası mutfaktan yeni odaya taşındı." },
-        { birim: "YENİGÜN BİLGİ EVİ", mahalle: "YENİGÜN", adres: "Bağcılar Cad. No:88", devre: "yenigun_fiber", tip: "FTTX", not: "Türknet ekip onayı bekleniyor." }
+        { birim: "100.YIL MAHALLESİ HAVUZ", mahalle: "100.YIL", adres: "2162. Sokak No:3", devre: "yuzyilhavuzvdsl", tip: "VDSL", op: "Türknet", durum: "Pasif", not: "Devre kapatıldı, taşınma süreci bekleniyor." },
+        { birim: "KAZIM KARABEKİR BİLGİ EVİ", mahalle: "K.KARABEKİR", adres: "259. Sokak No:2", devre: "kk_bilgievi", tip: "VDSL", op: "Türk Telekom", durum: "Aktif", not: "Paket değişikliği yapıldı. Sorunsuz çalışıyor." },
+        { birim: "GÜNEŞLİ BAĞ KAFE", mahalle: "GÜNEŞLİ", adres: "Fevzi Çakmak No:12", devre: "bagkafe_fiber", tip: "FİBER", op: "Türknet", durum: "Aktif", not: "Yeni tesis tamamlandı. Hız testi stabil." },
+        { birim: "ŞEHİR KÜTÜPHANESİ", mahalle: "SANCAKTEPE", adres: "Şehir Cad. No:5", devre: "kutuphane_metro", tip: "METRO", op: "Türk Telekom", durum: "Aktif", not: "Sistem odası mutfaktan yeni odaya taşındı." },
+        { birim: "MAHALLE MUHTARLIĞI", mahalle: "YENİGÜN", adres: "Muhtar Sok. No:1", devre: "sbox_123", tip: "S.BOX", op: "Superbox", durum: "Aktif", not: "Yedek hat olarak tanımlandı." }
     ];
 
-    let current = 1;
-    let perPage = 5; 
+    function updateStats() {
+        document.getElementById('stat-tnet').innerText = liste.filter(i => i.op === "Türknet").length;
+        document.getElementById('stat-tt').innerText = liste.filter(i => i.op === "Türk Telekom").length;
+        document.getElementById('stat-sbox').innerText = liste.filter(i => i.op === "Superbox").length;
+        document.getElementById('stat-fiber').innerText = liste.filter(i => i.tip === "FİBER" || i.tip === "METRO").length;
+    }
+
     let filtered = [...liste];
+    let current = 1;
+    let perPage = 10;
 
     function draw() {
         const start = (current - 1) * perPage;
@@ -109,40 +183,34 @@
         document.getElementById('tBody').innerHTML = items.map(i => `
             <tr onclick="openCard('${i.birim}')">
                 <td><b>${i.birim}</b></td>
-                <td>${i.mahalle}</td>
-                <td>${i.adres}</td>
-                <td><code>${i.devre}</code></td>
+                <td>${i.op}</td>
+                <td><span class="badge bg-${i.tip.toLowerCase()}">${i.tip}</span></td>
+                <td><span class="status-dot" style="background:${i.durum === 'Aktif' ? '#22c55e' : '#ef4444'}"></span> ${i.durum}</td>
             </tr>
         `).join('');
-        
-        const pageCount = Math.ceil(filtered.length / perPage);
-        let pHTML = "";
-        for(let i=1; i<=pageCount; i++) {
-            pHTML += `<button class="${i===current?'active':''}" onclick="current=${i};draw();">${i}</button>`;
-        }
-        document.getElementById('pagin').innerHTML = pHTML;
+        updateStats();
     }
 
     function search() {
         const val = document.getElementById('searchBox').value.toLowerCase();
-        filtered = liste.filter(i => i.birim.toLowerCase().includes(val) || i.devre.toLowerCase().includes(val) || i.mahalle.toLowerCase().includes(val));
-        current = 1;
+        filtered = liste.filter(i => i.birim.toLowerCase().includes(val) || i.op.toLowerCase().includes(val) || i.mahalle.toLowerCase().includes(val));
         draw();
     }
 
     function openCard(name) {
         const i = liste.find(x => x.birim === name);
         document.getElementById('m-birim').innerText = i.birim;
+        document.getElementById('m-operatör').innerText = i.op + " Altyapısı";
         document.getElementById('m-mahalle').innerText = i.mahalle;
         document.getElementById('m-adres').innerText = i.adres;
         document.getElementById('m-devre').innerText = i.devre;
         document.getElementById('m-tip').innerText = i.tip;
-        document.getElementById('m-not').innerText = i.not || "Not bulunmuyor.";
+        document.getElementById('m-tip').className = "badge bg-" + i.tip.toLowerCase();
+        document.getElementById('m-not').innerText = i.not;
         document.getElementById('myModal').style.display = "block";
     }
 
     function closeModal() { document.getElementById('myModal').style.display = "none"; }
-    window.onclick = (e) => { if(e.target == document.getElementById('myModal')) closeModal(); }
     window.onload = draw;
 </script>
 
