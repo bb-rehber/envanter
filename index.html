@@ -23,7 +23,7 @@
 
         .container { max-width: 1200px; margin: auto; }
 
-        /* ÜST RAPOR KARTLARI - 3'lü GÖRÜNÜM */
+        /* ÜST RAPOR KARTLARI */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -70,7 +70,7 @@
 
         code { background: #fef2f2; color: #b91c1c; padding: 2px 5px; border-radius: 4px; font-weight: bold; font-size: 12px; }
 
-        /* KİŞİ KARTI - KOMPAKT BOYUT */
+        /* KİŞİ KARTI */
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); }
         .modal-content { 
             background: white; margin: 10vh auto; width: 90%; max-width: 500px; 
@@ -113,9 +113,9 @@
                 <thead>
                     <tr>
                         <th>BİRİM ADI</th>
-                        <th>OPERATÖR</th>
-                        <th>DEVRE NO</th>
                         <th>MAHALLE</th>
+                        <th>DEVRE NO</th>
+                        <th>OPERATÖR</th>
                     </tr>
                 </thead>
                 <tbody id="tBody"></tbody>
@@ -165,9 +165,9 @@
         document.getElementById('tBody').innerHTML = filtered.map(i => `
             <tr onclick="openCard('${i.birim}')">
                 <td><b>${i.birim}</b></td>
-                <td>${i.op}</td>
-                <td><code>${i.devre}</code></td>
                 <td>${i.mahalle}</td>
+                <td><code>${i.devre}</code></td>
+                <td>${i.op}</td>
             </tr>
         `).join('');
         updateStats();
